@@ -1,12 +1,39 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import {applyMiddleware, createStore, combineReducers, compose} from "redux"
+import {composeWithDevTools} from 'redux-devtools-extension'
+import {routerReducer} from 'react-router-redux'
+import {connectRouter} from 'connected-react-router'
+import {createBrowserHistory} from "history"
+import createSagaMiddleware from 'redux-saga'
+import Routes from './routes'
+import {reducer as tenantOverviewReducer} from 'reducers/tenant/overview'
+import {reducer as serviceOverviewReducer} from 'reducers/service/overview'
+import tenantSaga from 'sagas/tenant'
+import serviceSaga from 'sagas/service'
+import thunk from 'redux-thunk'
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const history = createBrowserHistory()
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+const reducer = {
+    tenantOverview: tenantOverviewReducer,
+    serviceOverview: serviceOverviewReducer,
+    routing: routerReducer,
+    router: connectRouter(history)
+}
+
+const sagaMiddleware = createSagaMiddleware()
+const store = createStore(
+    combineReducers(reducer),
+    composeWithDevTools(
+        applyMiddleware(sagaMiddleware),
+        applyMiddleware(thunk)
+    )
+)
+
+
+sagaMiddleware.run(tenantSaga)
+sagaMiddleware.run(serviceSaga)
+
+const App = Routes(store, history)
+ReactDOM.render(<App/>, document.getElementById('root'))

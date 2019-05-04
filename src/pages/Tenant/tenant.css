@@ -1,0 +1,43 @@
+.table {
+    min-width: 700px;
+}
+
+.root {
+    width: 100%;
+    margin-top: 30px;
+}
+
+.app {
+    width: 100%;
+    padding: 10px 30px;
+}
+
+body {
+    overscroll-behavior: none;
+}
+
+.recharts-wrapper {
+    font-size: 9px !important;
+}
+
+.dashboard-text {
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    font-size: 12px;
+
+    color: #888888;
+    font-weight: bold;
+
+}
+
+.dashboard-title{
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    font-size: 25px;
+}
+
+.header {
+    height: 68.813px;
+}
+
+.row{
+    margin-bottom: 20px;
+}
