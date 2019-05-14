@@ -4,9 +4,6 @@ import Paper from "@material-ui/core/Paper";
 
 class Number extends Component {
     render() {
-
-        console.log("value",this.props.value)
-        // var image = this.props.image
         return (
             <Paper className="paper" style={{borderRadius: "7pt"}}>
 

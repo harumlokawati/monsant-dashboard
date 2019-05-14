@@ -6,11 +6,11 @@ import {withStyles} from "@material-ui/core/styles";
 
 const styles = {
     input: {
-        fontSize: "15px"
+        fontSize: "14px"
     }
 };
 
-class Option extends Component {
+class IntervalOption extends Component {
     render() {
 
         const {classes} = this.props;
@@ -64,4 +64,4 @@ Option.propTypes = {
 };
 
 
-export default withStyles(styles)(Option)
+export default withStyles(styles)(IntervalOption)

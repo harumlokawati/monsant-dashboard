@@ -3,11 +3,13 @@ import {Row} from "reactstrap";
 import TableOverviewTenant from 'components/Tenant/TableOverviewTenant'
 import BarStack from 'components/Chart/BarStack'
 import Number from 'components/Chart/Number'
-import Option from 'components/Option'
-import {pageRequest} from "../../../actions/tenant/overview";
+import IntervalOption from 'src/components/Option/IntervalOption'
+import DateOption from 'src/components/Option/DateOption'
+import {pageRequest, getLoginActivity, setOptionInterval, setOptionTimeEnd, setOptionTimeStart} from "../../../actions/tenant/overview";
 import {connect} from "react-redux";
 import TimeSeries from "../../Chart/TimeSeries";
 import "./tenantoverview.css"
+import moment from "moment";
 
 class TenantOverview extends Component {
 
@@ -17,13 +19,33 @@ class TenantOverview extends Component {
     }
 
     componentWillMount() {
-        const {dispatch} = this.props
+        const {dispatch, timeStart, timeEnd, interval} = this.props
         dispatch(pageRequest())
+        dispatch(getLoginActivity(timeStart, timeEnd, interval))
 
     }
 
     constructor(props) {
         super(props)
+    }
+
+
+    handleChange = event => {
+        const {dispatch, timeStart, timeEnd} = this.props
+        const {name, value} = event.target;
+        if (name == 'interval') {
+            dispatch(setOptionInterval(timeStart,timeEnd,value))
+        }
+    }
+
+    handleTimeStartChange = date => {
+        const {dispatch, timeEnd, interval} = this.props
+        dispatch(setOptionTimeStart(moment(date.toDate()).utc().format(), timeEnd, interval))
+    }
+
+    handleTimeEndChange = date => {
+        const {dispatch, timeStart, interval} = this.props
+        dispatch(setOptionTimeEnd(timeStart, moment(date.toDate()).utc().format(), interval))
     }
 
     render() {
@@ -323,9 +345,12 @@ class TenantOverview extends Component {
                 <div className="dashboard-title">Tenant Overview</div>
             </div>
 
-            <Option className="mr-1" optionValue="10s" optionName="interval" title="interval" menu={options}/>
-            <Option className="mr-1" optionValue="10s" optionName="interval" title="time start" menu={options}/>
-            <Option className="mr-1" optionValue="10s" optionName="interval" title="time end" menu={options}/>
+            <DateOption className="mr-1" value={this.props.timeStart} title="Start"
+                        handleChange={this.handleTimeStartChange}/>
+            <DateOption className="mr-1" value={this.props.timeEnd} title="End"
+                        handleChange={this.handleTimeEndChange}/>
+            <IntervalOption className="mr-1" optionValue={this.props.interval} optionName="interval" title="interval"
+                            menu={options} handleChange={this.handleChange}/>
             <Row>
 
                 <div className="partition-20">
@@ -347,7 +372,7 @@ class TenantOverview extends Component {
                     <BarStack data={status} axis="package" dataKeys={planDataKeys} title="Tenant Plans" height={250}/>
                 </div>
                 <div className="partition-66">
-                    <TimeSeries data={loginAct} dataKeys={loginKeys} title={"Login Activity"} height={250}/>
+                    <TimeSeries data={this.props.loginActivity} dataKeys={loginKeys} title={"Login Activity"} height={250}/>
                 </div>
                 <div className="partition-66">
                     <TableOverviewTenant rows={this.props.tenantOverview['number_of_tenants']} title="Tenant List"/>
@@ -359,10 +384,14 @@ class TenantOverview extends Component {
 }
 
 function mapStateToProps(state) {
-    const {tenantOverview, tenantPlan} = state.tenantOverview
+    const {tenantOverview, tenantPlan, loginActivity, timeStart, timeEnd, interval} = state.tenantOverview
     return {
         tenantOverview: tenantOverview,
-        tenantPlan: tenantPlan
+        tenantPlan: tenantPlan,
+        loginActivity: loginActivity,
+        interval: interval,
+        timeStart: timeStart,
+        timeEnd: timeEnd
     }
 }
 

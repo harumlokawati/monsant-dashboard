@@ -5,13 +5,13 @@ import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import TablePagination from "@material-ui/core/TablePagination";
 import Paper from "@material-ui/core/Paper";
-import {getTenantList} from 'actions/tenant/overview'
+import {getServiceList} from 'actions/service/overview'
 import {connect} from 'react-redux'
 import React, {Component} from "react";
 
 import './table.css'
 
-class TableOverviewTenant extends Component {
+class TableServiceList extends Component {
     state = {
         page: 0,
         rowsPerPage: 5,
@@ -19,20 +19,19 @@ class TableOverviewTenant extends Component {
 
     handleChangePage = (event, page) => {
         this.setState({page});
-        const {dispatch} = this.props
-        dispatch(getTenantList(page + 1, this.state.rowsPerPage))
+        const {dispatch, timeStart, timeEnd} = this.props
+        dispatch(getServiceList(timeStart, timeEnd,page + 1, this.state.rowsPerPage))
     };
 
     handleChangeRowsPerPage = event => {
         this.setState({rowsPerPage: event.target.value});
-        const {dispatch} = this.props
-        dispatch(getTenantList(this.state.page + 1, event.target.value))
+        const {dispatch, timeStart, timeEnd} = this.props
+        dispatch(getServiceList(timeStart, timeEnd,this.state.page + 1, event.target.value))
     };
 
     componentWillMount() {
-        const {dispatch} = this.props
-        console.log("dispatch")
-        dispatch(getTenantList(this.state.page + 1, this.state.rowsPerPage))
+        const {dispatch, timeStart, timeEnd} = this.props
+        dispatch(getServiceList(timeStart, timeEnd,this.state.page + 1, this.state.rowsPerPage))
 
     }
 
@@ -41,7 +40,7 @@ class TableOverviewTenant extends Component {
     }
 
     render() {
-        let rows = this.props.tenantList
+        let rows = this.props.serviceList.services
         return (
             <Paper className="table-paper" style={{borderRadius: "7pt"}}>
                 <p className="table-title">{this.props.title}</p>
@@ -50,23 +49,25 @@ class TableOverviewTenant extends Component {
                     <Table className="table">
                         <TableHead className="table-header">
                             <TableRow>
-                                <TableCell>ID</TableCell>
-                                <TableCell align="left">Tenant</TableCell>
-                                <TableCell align="left">Plan</TableCell>
-                                <TableCell align="left">Status</TableCell>
+                                <TableCell>Service</TableCell>
                                 <TableCell align="left">Usage</TableCell>
+                                <TableCell align="left">Latency</TableCell>
+                                <TableCell align="left">Error Rate</TableCell>
+                                <TableCell align="left">Bytes In</TableCell>
+                                <TableCell align="left">Bytes Out</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {rows.map(row => (
-                                <TableRow key={row.id}>
+                                <TableRow key={row.service}>
                                     <TableCell component="th" scope="row">
-                                        #{row.id}
+                                        {row.service}
                                     </TableCell>
-                                    <TableCell align="left">{row.name}</TableCell>
-                                    <TableCell align="left">{row.plan}</TableCell>
-                                    <TableCell align="left">{row.status}</TableCell>
-                                    <TableCell align="left"><p className="status-ok">{row.usage_status}</p></TableCell>
+                                    <TableCell align="left">{row.usage}%</TableCell>
+                                    <TableCell align="left">{row.latency} ms</TableCell>
+                                    <TableCell align="left">{row.error_rate}%</TableCell>
+                                    <TableCell align="left">{row.bytes_in} bytes</TableCell>
+                                    <TableCell align="left">{row.bytes_out} bytes</TableCell>
                                 </TableRow>
                             ))}
                             {rows.length < this.state.rowsPerPage && (
@@ -79,7 +80,7 @@ class TableOverviewTenant extends Component {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={this.props.rows ? this.props.rows : 0}
+                        count={this.props.serviceList.num_of_service}
                         rowsPerPage={this.state.rowsPerPage}
                         page={this.state.page}
                         backIconButtonProps={{
@@ -99,9 +100,11 @@ class TableOverviewTenant extends Component {
 
 
 function mapStateToProps(state) {
-    const {tenantList} = state.tenantOverview
+    const {serviceList, timeStart, timeEnd} = state.serviceOverview
     return {
-        tenantList: tenantList
+        serviceList: serviceList,
+        timeStart:timeStart,
+        timeEnd: timeEnd
     }
 }
 
@@ -109,4 +112,4 @@ function mapDispatchToProps(dispatch) {
     return {dispatch}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TableOverviewTenant)
+export default connect(mapStateToProps, mapDispatchToProps)(TableServiceList)

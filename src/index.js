@@ -9,8 +9,10 @@ import createSagaMiddleware from 'redux-saga'
 import Routes from './routes'
 import {reducer as tenantOverviewReducer} from 'reducers/tenant/overview'
 import {reducer as serviceOverviewReducer} from 'reducers/service/overview'
+import {reducer as resourceReducer} from 'reducers/resource'
 import tenantSaga from 'sagas/tenant'
 import serviceSaga from 'sagas/service'
+import resourceSaga from 'sagas/resource'
 import thunk from 'redux-thunk'
 
 const history = createBrowserHistory()
@@ -18,6 +20,7 @@ const history = createBrowserHistory()
 const reducer = {
     tenantOverview: tenantOverviewReducer,
     serviceOverview: serviceOverviewReducer,
+    resource: resourceReducer,
     routing: routerReducer,
     router: connectRouter(history)
 }
@@ -34,6 +37,7 @@ const store = createStore(
 
 sagaMiddleware.run(tenantSaga)
 sagaMiddleware.run(serviceSaga)
+sagaMiddleware.run(resourceSaga)
 
 const App = Routes(store, history)
 ReactDOM.render(<App/>, document.getElementById('root'))

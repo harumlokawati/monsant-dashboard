@@ -1,16 +1,23 @@
 import {
     TENANT_SET_TENANT_LIST,
     TENANT_SET_TENANT_OVERVIEW,
-    TENANT_SET_TENANT_PLAN
+    TENANT_SET_TENANT_PLAN, TENANT_SET_OPTION_INTERVAL, TENANT_SET_OPTION_TIME_END, TENANT_SET_OPTION_TIME_START,
+    TENANT_SET_LOGIN_ACTIVITY
 } from '../../../actions/tenant/overview/constants'
 import {isFSA} from 'flux-standard-action'
 import invariant from 'invariant'
+import moment from "moment";
+
 
 let initialState = {
     totalPage: null,
     tenantList: [],
+    loginActivity: [],
     tenantOverview: {},
-    currentPage: 1
+    currentPage: 1,
+    interval: '1h',
+    timeEnd: moment().utc().format(),
+    timeStart: moment().add(-2, 'day').utc().format()
 }
 
 
@@ -27,8 +34,15 @@ const reducer = (state = initialState, action) => {
         case TENANT_SET_TENANT_OVERVIEW:
             return {...state, tenantOverview: payload.tenantOverview}
         case TENANT_SET_TENANT_PLAN:
-            console.log("set", payload.tenantPlan)
             return {...state, tenantPlan: payload.tenantPlan}
+        case TENANT_SET_OPTION_INTERVAL:
+            return {...state, interval: payload.interval}
+        case TENANT_SET_OPTION_TIME_END:
+            return {...state, timeEnd: payload.timeEnd}
+        case TENANT_SET_OPTION_TIME_START:
+            return {...state, timeStart: payload.timeStart}
+        case TENANT_SET_LOGIN_ACTIVITY:
+            return {...state, loginActivity: payload.loginActivity}
         default:
             return {...state}
     }

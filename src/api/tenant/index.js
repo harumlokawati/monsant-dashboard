@@ -39,3 +39,19 @@ export function getTenantPlanOverview(request) {
             return Promise.reject(err)
         })
 }
+
+export function getLoginActivity(timeStart, timeEnd, interval) {
+    return axios.get(url.GET_TENANTS_LOGIN_ACTIVITY_URL, {
+        params: {
+            start: timeStart,
+            end: timeEnd,
+            interval: interval
+        }
+    })
+        .then(res => {
+            return Promise.resolve(res.data.data)
+        })
+        .catch(err => {
+            return Promise.reject(err)
+        })
+}
